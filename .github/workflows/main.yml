@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      HEADLESS: true
     
     steps:
       - name: Descargar código del repositorio
@@ -17,6 +18,11 @@ jobs:
         with:
           python-version: '3.9'
       
+      - name: Instalar Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+      
       - name: Instalar dependencias
         run: |
           python -m pip install --upgrade pip
@@ -24,7 +30,7 @@ jobs:
       
       - name: Ejecutar pruebas en modo Headless
         run: |
-          pytest test_tienda.py --html=reporte_final.html --self-contained-html
+          pytest test_practico.py test_pom.py robust_test.py --html=reporte_final.html --self-contained-html
       
       - name: Guardar el Reporte HTML como evidencia
         if: always()
@@ -32,3 +38,10 @@ jobs:
         with:
           name: reporte-selenium
           path: reporte_final.html
+      
+      - name: Guardar capturas de pantalla
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capturas-selenium
+          path: capturas/
